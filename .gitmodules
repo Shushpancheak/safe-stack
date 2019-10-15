@@ -1,0 +1,9 @@
+[submodule "shush-dump"]
+	path = shush-dump
+	url = https://github.com/Shushpancheak/shush-dump.git
+[submodule "shush-logs"]
+	path = shush-logs
+	url = https://github.com/Shushpancheak/shush-logs
+[submodule "googletest"]
+	path = googletest
+	url = https://github.com/Google/googletest

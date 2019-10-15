@@ -65,29 +65,62 @@ public:
 
   T Pop();
 
+  /**
+   * Get the size of current used space.
+   */
   size_t GetCurSize();
+  /**
+   * Get current capacity of the stack.
+   */
   size_t GetBufSize();
 
   void Ok();
 
 protected:
+  /**
+   * Message for Ok() calls.
+   */
   std::string GetDumpMessage(Errc error_code);
   std::string GetDumpMessage();
   std::string GetErrorMessage(Errc error_code);
 
+  /**
+   * Fills both sides of buffer with canaries.
+   */
   void FillCanaries(size_t all_buffer_size);
+  /**
+   * Sets current size of stack in buffer.
+   */
   void SetCurSizeVal(size_t cur_size);
+  /**
+   * Sets capacity of the stack in buffer.
+   */
   void SetBufferSizeVal(size_t buffer_size);
+  /**
+   * Fills given range with poison values.
+   */
   void FillWithPoison(char* from, char* to);
+  /**
+   * Calculates and places hash into corresponding place
+   */
   void CalculateAndPlaceHash(size_t all_buffer_size);
   void CalculateAndPlaceHash();
 
   uint64_t GetHashValue();
   uint64_t GetFirstCanary();
   uint64_t GetSecondCanary();
+  /**
+   * Get size of all allocated space. In chars.
+   */
   size_t   GetAllBufferSize();
 
+  /**
+   * Get poison value as if it was T.
+   */
   constexpr T GetPoisonValue();
+  /**
+   * Checks whether the given value is poison.
+   */
   bool        IsPoison(const T& val);
 
   uint64_t CalculateHash(size_t all_buffer_size);
@@ -95,6 +128,9 @@ protected:
 
   T GetElement(size_t ind);
 
+  /**
+   * Doubles the capacity and reallocates the whole buffer.
+   */
   void ReallocateDoubleSize();
 
   char* buf_;
@@ -497,9 +533,9 @@ public:
   SafeStackStatic& operator=(const SafeStackStatic& stack) = delete;
   SafeStackStatic& operator=(SafeStackStatic&& stack)      = delete;
 
+private:
   void ReallocateDoubleSize();
 
-private:
   char buf_static_[CANARY_SIZE + HASH_SIZE +
                    CUR_SIZE_SIZE + BUF_SIZE_SIZE +
                    ReservedSize * sizeof(T) + CANARY_SIZE] {};

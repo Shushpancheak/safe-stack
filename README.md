@@ -8,7 +8,7 @@ cmake .. # "-UBUILD_TESTS -DBUILD_TESTS=ON" to build tests
 make
 ```
 
-## How to use THE LIBRARY
+## How to use
 Download the repository and place it into your project directory. Don't forget to `git submodule update <submodule>` all necessary submodules. Change the target name of one of shush-formats in submodules so that you can actually link them (or use another method of compiling, bit this particular seems easier). In your project's CMakeLists.txt file, insert the following lines:
 ```cmake
 ...
@@ -18,12 +18,6 @@ add_subdirectory(shush-dump)
 target_link_libraries(${PROJECT_NAME} shush-logs)
 target_link_libraries(${PROJECT_NAME} shush-dump)
 ...
-```
-
-## How to use THE EXECUTABLE
-```shell
-cd build
-./PROJECT_NAME
 ```
 
 ## Build documentation

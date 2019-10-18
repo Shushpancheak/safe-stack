@@ -86,10 +86,10 @@ endif() # BUILD_TESTS
 # - - - - - - - - - - - - DEPENDENCIES- - - - - - - - - - - - - - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-add_subdirectory(shush-dump)
-add_subdirectory(shush-logs)
-
-include_directories(shush-dump/include)
-include_directories(shush-logs/include)
-
-target_link_libraries(${PROJECT_NAME} INTERFACE shush-dump shush-logs)
+#add_subdirectory(shush-dump)
+#add_subdirectory(shush-logs)
+#
+#include_directories(shush-dump/include)
+#include_directories(shush-logs/include)
+#
+#target_link_libraries(${PROJECT_NAME} INTERFACE shush-dump shush-logs)

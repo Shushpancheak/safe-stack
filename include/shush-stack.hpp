@@ -26,6 +26,11 @@ inline static const size_t BUF_POS           = BUF_SIZE_POS + BUF_SIZE_SIZE;
 
 inline static const char POISON_VALUE        = '#';
 
+inline static const size_t DUMP_MESSAGE_MAX_CHAR_COUNT = 5000;
+inline static const size_t DUMP_ERR_NAME_MAX_CHAR_COUNT = 150;
+static char dump_msg_buffer[DUMP_MESSAGE_MAX_CHAR_COUNT];
+static char dump_error_name_buffer[DUMP_ERR_NAME_MAX_CHAR_COUNT];
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 // - - - - - - - - - - - - - ERROR CODES - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -80,9 +85,8 @@ class SafeStack {
   /**
    * Message for Ok() calls.
    */
-  std::string GetDumpMessage(Errc error_code);
-  std::string GetDumpMessage();
-  std::string GetErrorMessage(Errc error_code);
+  char* GetDumpMessage(int error_code);
+  char* GetErrorName(int error_code);
 
   /**
    * Fills both sides of buffer with canaries.
@@ -299,7 +303,7 @@ void SafeStack<T>::Ok() {
 
 
 template <class T>
-std::string SafeStack<T>::GetDumpMessage(Errc error_code) {
+char* SafeStack<T>::GetDumpMessage(int error_code) {
   logger_.Log("WARNING: Oh-oh, it appears a GetDumpMessage was invoked!");
   std::string str =
       "\n- - - - - - DUMP MESSAGE FROM SHUSH::STACK- - - - - - \n";
@@ -307,7 +311,7 @@ std::string SafeStack<T>::GetDumpMessage(Errc error_code) {
   str += "this address: " + std::to_string(reinterpret_cast<size_t>(this)) +
       ".\n";
   str += "Error code == " + std::to_string(error_code) + " (";
-  str += GetErrorMessage(error_code);
+  str += GetErrorName(error_code);
   str += ")\n\n";
 
   str += "Byte representation of the stack:\n" + std::string(buf_) + "\n\n";
@@ -341,55 +345,48 @@ std::string SafeStack<T>::GetDumpMessage(Errc error_code) {
 
   str += "\n- - - -END OF DUMP MESSAGE FROM SHUSH::STACK- - - - - - \n";
 
-  return str;
+  memcpy(dump_msg_buffer, &str[0], std::min(DUMP_MESSAGE_MAX_CHAR_COUNT, str.length()));
+
+  return dump_msg_buffer;
 }
 
 
 template <class T>
-std::string SafeStack<T>::GetDumpMessage() {
-  return GetDumpMessage(ASSERT_FAILED);
-}
-
-
-template <class T>
-std::string SafeStack<T>::GetErrorMessage(Errc error_code) {
+char* SafeStack<T>::GetErrorName(int error_code) {
   switch (error_code) {
   case ASSERT_FAILED: {
-    return "assertion failed";
+    strcpy(dump_error_name_buffer, "assertion failed");
   }
   case THIS_PTR_IS_NULLPTR: {
-    return
-        "[this] pointer points to nullptr. Have you forgot to initialize the object?";
+    strcpy(dump_error_name_buffer, "[this] pointer points to nullptr. Have you forgot to initialize the object?");
   }
   case CORRUPTED_FIRST_CANARY: {
-    return
-        "first [CANARY] was corrupted. Perhaps, someone tried to overwrite it";
+    strcpy(dump_error_name_buffer, "first [CANARY] was corrupted. Perhaps, someone tried to overwrite it");
   }
   case CORRUPTED_SECOND_CANARY: {
-    return
-        "second [CANARY] was corrupted. Perhaps, someone tried to overwrite it";
+    strcpy(dump_error_name_buffer, "second [CANARY] was corrupted. Perhaps, someone tried to overwrite it");
   }
   case CUR_SIZE_IS_BIGGER_THAN_BUF: {
-    return "current size value of stack is bigger than buffer size value";
+    strcpy(dump_error_name_buffer, "current size value of stack is bigger than buffer size value");
   }
   case HASH_NOT_THE_SAME: {
-    return "calculated hash is not equal to what is stored";
+    strcpy(dump_error_name_buffer, "calculated hash is not equal to what is stored");
   }
   case UNINITIALIZED_CELL_IS_NOT_POISON: {
-    return
-        "one of the uninitialized cells is not equal to poison value. Perhaps, someone tried to overwrite it";
+    strcpy(dump_error_name_buffer, "one of the uninitialized cells is not equal to poison value. Perhaps, someone tried to overwrite it");
   }
   case POP_ON_0_SIZE: {
-    return "the size of the stack was 0, and a Pop() method has been called.";
+    strcpy(dump_error_name_buffer, "the size of the stack was 0, and a Pop() method has been called.");
   }
   case REALLOCATION_IN_STATIC_STACK: {
-    return
-        "static stack overflow. Consider increasing its capacity or switching to dynamic stack.";
+    strcpy(dump_error_name_buffer, "static stack overflow. Consider increasing its capacity or switching to dynamic stack.");
   }
   default: {
-    return "UNKNOWN ERROR CODE";
+    strcpy(dump_error_name_buffer, "UNKNOWN ERROR CODE");
   }
   }
+
+  return dump_error_name_buffer;
 }
 
 

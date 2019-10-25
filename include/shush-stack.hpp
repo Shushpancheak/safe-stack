@@ -19,12 +19,12 @@ inline static const size_t HASH_POS              = CANARY_SIZE;
 inline static const size_t CUR_SIZE_SIZE         = sizeof(size_t);
 inline static const size_t CUR_SIZE_POS          = HASH_POS + HASH_SIZE;
 
-inline static const size_t BUF_SIZE_SIZE     = sizeof(size_t);
-inline static const size_t BUF_SIZE_POS      = CUR_SIZE_POS + CUR_SIZE_SIZE;
+inline static const size_t BUF_SIZE_SIZE         = sizeof(size_t);
+inline static const size_t BUF_SIZE_POS          = CUR_SIZE_POS + CUR_SIZE_SIZE;
 
-inline static const size_t BUF_POS           = BUF_SIZE_POS + BUF_SIZE_SIZE;
+inline static const size_t BUF_POS               = BUF_SIZE_POS + BUF_SIZE_SIZE;
 
-inline static const char POISON_VALUE        = '#';
+inline static const char POISON_VALUE            = '#';
 
 inline static const size_t DUMP_MESSAGE_MAX_CHAR_COUNT = 5000;
 inline static const size_t DUMP_ERR_NAME_MAX_CHAR_COUNT = 150;
@@ -69,6 +69,11 @@ class SafeStack {
   void Push(T&& item);
 
   T Pop();
+
+  /**
+   * Unheard generosity!
+   */
+  T GetElement(size_t ind);
 
   /**
    * Get the size of current used space.
@@ -129,8 +134,6 @@ class SafeStack {
 
   uint64_t CalculateHash(size_t all_buffer_size);
   uint64_t CalculateHash();
-
-  T GetElement(size_t ind);
 
   /**
    * Doubles the capacity and reallocates the whole buffer.
